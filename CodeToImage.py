@@ -23,17 +23,24 @@ import sys
 # --------------------------------------------------------------------------- /#
 def chunk_file(lines):
     length = len(lines)
+
     chunks = []
     for i in range(0, length, 36):
+        chunk = []
         for line in range(i, i + 36, 1):
             if line == length:
                 break
-            chunks.append(lines[line][0:72].rstrip('\n') + '\n')
+            chunk.append(lines[line][0:72].rstrip('\n') + '\n')
+        chunks.append(chunk)
     return chunks
 
 # Open the file as a list of strings
 open_file = open("orgn.f", 'r').readlines()
 
-for chunk in chunk_file(open_file):
-    for line in chunk:
-        sys.stdout.write(line)
+chunks = chunk_file(open_file)
+new_chunks = enumerate(chunks)
+
+for chunk in new_chunks:
+    output = open(str(chunk[0]) + ".ch", 'w')
+    for line in chunk[1]:
+        output.write(line)
