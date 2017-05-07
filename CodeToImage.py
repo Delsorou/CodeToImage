@@ -1,29 +1,29 @@
 #* -----------------------------------------------------------------------------
 #
-# FILE:              ----- FILE NAME -----
+# FILE:              CodeToImage.py
 #
-# DESCRIPTION:       ----- FILE DESCRIPTION -----
+# DESCRIPTION:       Program to convert Fortran source code into images
+#                    suitable for use with Spring 2017 ART100 Final
 #
-# DEVELOPED WITH:    ----- COMPILER AND SYSTEM -----
+# DEVELOPED WITH:    Python 2.7.13
 #
-# NOTES:             ----- NOTES -----
+# DEPENDENCIES:      python-pil 4.0.0-4, python-pygments 2.2.0
 #
-# VERSION:           ----- VERSION -----
+# NOTES:             None
+#
+# VERSION:           0.0
 #
 #---------------------------------------------------------------------------- *#
 
-import os
-import sys
 
 #* -----------------------------------------------------------------------------
-# FUNCTION:          ----- NAME -----()
-# DESCRIPTION:       ----- DESCRIPTION -----
-# RETURNS:           ----- TYPE ----- OR: nothing
-# NOTES:             ----- NOTES -----
+# FUNCTION:          chunk_strings()
+# DESCRIPTION:       Creates square chunks of text from a list of strings
+# RETURNS:           enumerated list of lists of strings
+# NOTES:             None
 # --------------------------------------------------------------------------- /#
-def chunk_file(lines):
+def chunk_strings(lines):
     length = len(lines)
-
     chunks = []
     for i in range(0, length, 36):
         chunk = []
@@ -32,15 +32,15 @@ def chunk_file(lines):
                 break
             chunk.append(lines[line][0:72].rstrip('\n') + '\n')
         chunks.append(chunk)
-    return chunks
+    enum_chunks = enumerate(chunks)
+    return enum_chunks
 
 # Open the file as a list of strings
 open_file = open("orgn.f", 'r').readlines()
 
-chunks = chunk_file(open_file)
-new_chunks = enumerate(chunks)
+chunks = chunk_strings(open_file)
 
-for chunk in new_chunks:
+for chunk in chunks:
     output = open(str(chunk[0]) + ".ch", 'w')
     for line in chunk[1]:
         output.write(line)
