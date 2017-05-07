@@ -15,6 +15,7 @@
 #
 #---------------------------------------------------------------------------- *#
 
+from PIL import Image, ImageDraw, ImageFont
 
 #* -----------------------------------------------------------------------------
 # FUNCTION:          chunk_strings()
@@ -40,7 +41,23 @@ open_file = open("orgn.f", 'r').readlines()
 
 chunks = chunk_strings(open_file)
 
+fnt = ImageFont.truetype('Pillow/Tests/fonts/FreeMono.ttf', 12)
+fontcolor = (0, 0, 0, 225)
+
 for chunk in chunks:
-    output = open(str(chunk[0]) + ".ch", 'w')
-    for line in chunk[1]:
-        output.write(line)
+    background = (0, 0, 0, 0)
+    test_img = Image.new("RGBA", (1,1))
+    test_draw = ImageDraw.Draw(test_img)
+    
+    # Concatenate the chunk for image processing
+    string_chunk = ''
+    for string in chunk[1]:
+        string_chunk += string
+
+    textsize = test_draw.textsize(string_chunk, fnt)
+
+    file_img = Image.new("RGBA", textsize, background)
+    file_draw = ImageDraw.Draw(file_img)
+
+    file_draw.text((0, 0), string_chunk, fontcolor, fnt)
+    file_img.save(str(chunk[0]) + ".png", "PNG")
