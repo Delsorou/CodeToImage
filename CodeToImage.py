@@ -15,7 +15,10 @@
 #
 #---------------------------------------------------------------------------- *#
 
-from PIL import Image, ImageDraw, ImageFont
+from ron import RonStyle 
+from pygments import highlight
+from pygments.lexers import FortranLexer
+from pygments.formatters import ImageFormatter
 
 #* -----------------------------------------------------------------------------
 # FUNCTION:          chunk_strings()
@@ -23,15 +26,15 @@ from PIL import Image, ImageDraw, ImageFont
 # RETURNS:           enumerated list of lists of strings
 # NOTES:             None
 # --------------------------------------------------------------------------- /#
-def chunk_strings(lines):
+def chunk_text(lines):
     length = len(lines)
     chunks = []
     for i in range(0, length, 36):
-        chunk = []
+        chunk = "" 
         for line in range(i, i + 36, 1):
             if line == length:
                 break
-            chunk.append(lines[line][0:72].rstrip('\n') + '\n')
+            chunk += lines[line][0:72].rstrip('\n') + '\n'
         chunks.append(chunk)
     enum_chunks = enumerate(chunks)
     return enum_chunks
@@ -39,25 +42,10 @@ def chunk_strings(lines):
 # Open the file as a list of strings
 open_file = open("orgn.f", 'r').readlines()
 
-chunks = chunk_strings(open_file)
-
-fnt = ImageFont.truetype('Pillow/Tests/fonts/FreeMono.ttf', 12)
-fontcolor = (0, 0, 0, 225)
-
-for chunk in chunks:
-    background = (0, 0, 0, 0)
-    test_img = Image.new("RGBA", (1,1))
-    test_draw = ImageDraw.Draw(test_img)
-    
-    # Concatenate the chunk for image processing
-    string_chunk = ''
-    for string in chunk[1]:
-        string_chunk += string
-
-    textsize = test_draw.textsize(string_chunk, fnt)
-
-    file_img = Image.new("RGBA", textsize, background)
-    file_draw = ImageDraw.Draw(file_img)
-
-    file_draw.text((0, 0), string_chunk, fontcolor, fnt)
-    file_img.save(str(chunk[0]) + ".png", "PNG")
+for chunk in chunk_text(open_file):
+    output_file = open(str(chunk[0]) + ".png", 'w')
+    output = highlight(chunk[1], FortranLexer(),
+            ImageFormatter(font_size=14,
+            font_name="FreeMono", line_numbers=False,
+            style=RonStyle, image_pad=0, line_pad=1))
+    output_file.write(output)
